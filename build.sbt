@@ -4,8 +4,6 @@ organization := "edu.berkeley.cs"
 
 version := "0.1"
 
-val chiselVersion = System.getProperty("chiselVersion", "3.0")
-
 scalaVersion := "2.11.7"
 
 resolvers ++= Seq(
@@ -15,7 +13,11 @@ resolvers ++= Seq(
 )
 
 // Provide a managed dependency on X if -DXVersion="" is supplied on the command line.
-val defaultVersions = Map("firrtl" -> "0.2-BETA-SNAPSHOT")
+val defaultVersions = Map(
+  "chisel" -> "3.0",
+  "chisel3" -> "3.0",
+  "firrtl" -> "0.2-BETA-SNAPSHOT"
+)
 
 libraryDependencies ++= (Seq("firrtl").map {
   dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) })
