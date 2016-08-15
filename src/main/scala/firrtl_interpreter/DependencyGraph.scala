@@ -41,12 +41,14 @@ object DependencyGraph extends SimpleLogger {
       dependencyGraph.numberOfNodes += 1
       val result = expression match {
         case Mux(condition, trueExpression, falseExpression, tpe) =>
-          Mux(
+          val newMux = new InstrumentedMux(
             renameExpression(condition),
             renameExpression(trueExpression),
             renameExpression(falseExpression),
             tpe
           )
+          dependencyGraph.muxes += newMux
+          newMux
         case WRef(name, tpe, kind, gender) => WRef(expand(name), tpe, kind, gender)
         case WSubField(subExpression, name, tpe, gender) =>
           WSubField(renameExpression(subExpression), name, tpe, gender)
@@ -245,6 +247,8 @@ class DependencyGraph(val circuit: Circuit, val module: Module) {
   val nodes            = new mutable.HashSet[String]
   val wires            = new mutable.HashSet[String]
   val inlinedPorts     = new mutable.HashSet[String]
+
+  val muxes            = new mutable.HashSet[InstrumentedMux]
 
   var numberOfStatements = 0
   var numberOfNodes = 0

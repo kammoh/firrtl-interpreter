@@ -111,4 +111,21 @@ class InterpretiveTester(input: String, vcdOutputFileName: String = "") {
         f"taking $elapsedSeconds%.6f seconds"
     )
   }
+  def reportMuxes(): Unit = {
+    val muxes = interpreter.dependencyGraph.muxes
+    if(muxes.nonEmpty) {
+      val trueLabel  = "true branches"
+      val falseLabel = "false branches"
+      val hashLabel  = "hashCode"
+//      println(f"$trueLabel%14s $falseLabel%14s  $hashLabel%f10s  muxes in ${interpreter.ast.main}")
+      println(f"$trueLabel%14s $falseLabel%14s $hashLabel%14s  muxes in ${interpreter.ast.main}")
+    }
+    else {
+      println(s"No muxes in ${interpreter.ast.main}")
+    }
+    for(mux <- interpreter.dependencyGraph.muxes) {
+      println(f"${mux.trueBranchTaken}%14d ${mux.falseBranchTaken}%14d  " +
+        f"${mux.hashCode()}%14d  ${mux.serialize} ${mux.sourceInfo}")
+    }
+  }
 }

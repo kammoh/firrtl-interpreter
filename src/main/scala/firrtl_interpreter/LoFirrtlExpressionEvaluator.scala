@@ -274,21 +274,31 @@ class LoFirrtlExpressionEvaluator(val dependencyGraph: DependencyGraph, val circ
 
     val result = try {
       expression match {
-        case Mux(condition, trueExpression, falseExpression, tpe) =>
+        case instrumentedMux: InstrumentedMux =>
+          val condition = instrumentedMux.cond
+          val trueExpression = instrumentedMux.tval
+          val falseExpression = instrumentedMux.fval
+          val tpe = instrumentedMux.tpe
+          instrumentedMux.sourceInfo = sourceInfo
+
           evaluate(condition) match {
             case ConcreteUInt(value, 1) =>
               val v = if (value > 0) {
                 if(evaluateAll) { evaluate(falseExpression)}
+                instrumentedMux.trueBranchTaken += 1L
                 evaluate(trueExpression)
               }
               else {
                 if(evaluateAll) { evaluate(trueExpression)}
+                instrumentedMux.falseBranchTaken += 1L
                 evaluate(falseExpression)
               }
               v.forceWidth(tpe)
             case v =>
               throw InterpreterException(s"mux($condition) must be (0|1).U<1> was $v $sourceInfo")
           }
+        case mux: Mux =>
+          throw InterpreterException(s"Error: mux(${mux.cond}) should be InstrumentedMux $sourceInfo")
         case WRef(name, tpe, kind, gender) => getValue(name).forceWidth(tpe)
         case ws: WSubField =>
           val name = ws.serialize

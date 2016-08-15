@@ -57,6 +57,8 @@ class GCDTester extends FlatSpec with Matchers {
       expect("io_z", 17)
 
       writeVCD()
+      report()
+      reportMuxes()
     }
   }
 }
