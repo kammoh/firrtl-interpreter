@@ -9,7 +9,7 @@ import org.scalatest.{FlatSpec, Matchers}
 class DynamicMemorySearch extends FlatSpec with Matchers {
   behavior of "dynamic memory search"
 
-  it should "run with correct results" in {
+  it should "run with correct results" ignore {
     val input =
     """
       |circuit DynamicMemorySearch :
@@ -112,7 +112,8 @@ class DynamicMemorySearch extends FlatSpec with Matchers {
           waitCount += 1
         }
 
-        // println(s"Done wait count is $waitCount done is ${peek("io_done")} got ${peek("io_target")} got $expectedIndex")
+        // println(s"Done wait count is $waitCount done is ${peek("io_done")} " +
+        //   s"got ${peek("io_target")} got $expectedIndex")
         expect("io_done", 1)
         expect("io_target", expectedIndex)
         step(1)

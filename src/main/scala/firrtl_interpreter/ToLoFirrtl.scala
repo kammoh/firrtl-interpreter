@@ -4,17 +4,15 @@ package firrtl_interpreter
 
 import java.io.{StringWriter, Writer}
 
-import firrtl.{LowFirrtlCompiler, Circuit}
-import firrtl.passes._
+import firrtl.LowFirrtlCompiler
+import firrtl.ir.Circuit
+import firrtl.Annotations.AnnotationMap
 
-/**
-  * Created by chick on 4/21/16.
-  */
 object ToLoFirrtl {
   def lower(c: Circuit): Circuit = {
     val compiler = new LowFirrtlCompiler
 
-    val compileResult = compiler.compile(c, Seq(), new StringWriter())
+    val compileResult = compiler.compile(c, new AnnotationMap(Seq.empty), new StringWriter())
     compileResult.circuit
   }
 }
