@@ -81,7 +81,7 @@ class FirrtlTerp(ast: Circuit) extends SimpleLogger {
         s"Error: setValue($name) not on input, use setValue($name, force=true) to override")
     }
 
-    circuitState.setValue(name, value)
+    circuitState.setValue(name, value, force)
   }
 
   def setValueWithBigInt(name: String, value: BigInt, force: Boolean = true): Concrete = {
@@ -91,7 +91,7 @@ class FirrtlTerp(ast: Circuit) extends SimpleLogger {
     }
     val concreteValue = TypeInstanceFactory(dependencyGraph.nameToType(name), value)
 
-    circuitState.setValue(name, concreteValue)
+    circuitState.setValue(name, concreteValue, force)
   }
 
   def hasInput(name: String): Boolean  = dependencyGraph.hasInput(name)

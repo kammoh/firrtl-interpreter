@@ -107,7 +107,7 @@ case class CircuitState(
   def cycleMemories(): Unit = {
     memories.values.foreach { memory => memory.cycle() }
   }
-  def setValue(key: String, concreteValue: Concrete): Concrete = {
+  def setValue(key: String, concreteValue: Concrete, force: Boolean = false): Concrete = {
     vcdLoggerOption.foreach { vcd =>
       vcd.wireChanged(key, concreteValue.value, concreteValue.width)
     }
@@ -122,7 +122,12 @@ case class CircuitState(
     }
     else if(registers.contains(key)) {
 //      println(s"Updating nextRegister $key => $concreteValue")
-      nextRegisters(key) = concreteValue
+      if(force) {
+        registers(key) = concreteValue
+      }
+      else {
+        nextRegisters(key) = concreteValue
+      }
       // we continue to use the initial values of registers when they appear on RHS of an expression
     }
     else if(isMemory(key)) {
@@ -195,12 +200,25 @@ case class CircuitState(
         s"$key=${m(key).value}"
       }.mkString(msg + prefix, separator, postfix)
     }
+    def showStringValues(msg: String, m: Map[String, String]): String = {
+      m.keys.toSeq.sorted.map { case key =>
+        s"$key=${m(key)}"
+      }.mkString(msg + prefix, separator, postfix)
+    }
+
+    val registersMap = registers.map { case (key, value) =>
+      val nextVal = nextRegisters.get(key) match {
+        case Some(c) => s":${c.value}"
+        case _ => ""
+      }
+      key -> s"${registers(key).value}$nextVal"
+    }.toMap
+
     s"""
        |CircuitState $stateCounter (${if(isStale) "STALE" else "FRESH"})
        |${showConcreteValues("Inputs", inputPorts.toMap)}
        |${showConcreteValues("Outputs", outputPorts.toMap)}
-       |${showConcreteValues("BeforeRegisters", registers.toMap)}
-       |${showConcreteValues("AfterRegisters", nextRegisters.toMap)}
+       |${showStringValues("Registers", registersMap)}
        |${showConcreteValues("Ephemera", ephemera.toMap)}
        |Memories${memories.values.mkString("\n", "\n  ", "")}""".stripMargin
   }

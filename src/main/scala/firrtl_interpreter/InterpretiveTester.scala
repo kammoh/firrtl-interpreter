@@ -40,9 +40,9 @@ class InterpretiveTester(input: String, vcdOutputFileName: String = "") {
     * @param name the name of a port
     * @param value a value to put on that port
     */
-  def poke(name: String, value: BigInt): Unit = {
+  def poke(name: String, value: BigInt, force: Boolean = false): Unit = {
     try {
-      interpreter.setValueWithBigInt(name, value)
+      interpreter.setValueWithBigInt(name, value, force)
     }
     catch {
       case ie: InterpreterException =>
