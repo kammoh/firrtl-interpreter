@@ -50,8 +50,8 @@ class ConcreteSpec extends FlatSpec with Matchers {
     (s1 + s2).isInstanceOf[ConcreteSInt] should be (true)
 
     (i1 + i2).width should be (i1.width.max(i2.width) + 1)
-    (i1 + s2).width should be (i1.width.max(s2.width) + 1)
-    (s1 + i2).width should be (s1.width.max(i2.width) + 1)
+    (i1 + s2).width should be (i1.width.max(s2.width - 1) + 2)
+    (s1 + i2).width should be ((s1.width - 1).max(i2.width) + 2)
     (s1 + s2).width should be (s1.width.max(s2.width) + 1)
   }
 
@@ -441,14 +441,41 @@ class ConcreteSpec extends FlatSpec with Matchers {
     if(random.nextBoolean()) randU else randS
   }
   def randU: ConcreteUInt = {
-    val randomWidth = random.nextInt(maxWidth)
+    // Ensure non-zero widths.
+    val randomWidth = math.max(random.nextInt(maxWidth), 1)
     ConcreteUInt(BigInt(randomWidth, random), randomWidth)
   }
   def randS: ConcreteSInt = {
-    val randomWidth = random.nextInt(maxWidth)
+    // Ensure non-zero widths.
+    val randomWidth = math.max(random.nextInt(maxWidth), 1)
     val (sign, width) = {
       if(random.nextBoolean()) (1, randomWidth + 1) else (-1, randomWidth + 2)
     }
     ConcreteSInt(BigInt(randomWidth, random) * sign, width)
+  }
+
+  behavior of "UInt with negative values"
+
+  it should "not allow negative inputs" in {
+    intercept[InterpreterException] {
+      ConcreteUInt(-1, 4)
+    }
+  }
+
+  it should "not be possible to create a negative UInt from various operations" in {
+    val a = ConcreteSInt(-1, 6)
+    val b = ConcreteSInt(-1, 6)
+    val z = ConcreteSInt(0, 6)
+    val c = a & b
+    c.value should be (BigInt("111111", 2))
+
+    val d = a | z
+    d.value should be (BigInt("111111", 2))
+
+    val e = a ^ z
+    e.value should be (BigInt("111111", 2))
+
+    val f = a.cat(b)
+    f.value should be (BigInt("1"*12, 2))
   }
 }
