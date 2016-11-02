@@ -1,8 +1,11 @@
 name := "firrtl-interpreter"
 
-organization := "edu.berkeley.cs"
+//organization := "edu.berkeley.cs"
+organization := "com.github.kammoh"
 
 version := "1.1-SNAPSHOT"
+
+resolvers += "jitpack" at "https://jitpack.io"
 
 val chiselVersion = System.getProperty("chiselVersion", "3.1-SNAPSHOT")
 
@@ -18,13 +21,13 @@ resolvers ++= Seq(
 val defaultVersions = Map("firrtl" -> "1.1-SNAPSHOT")
 
 libraryDependencies ++= (Seq("firrtl").map {
-  dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) })
+  dep: String => "com.github.kammoh" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) })
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.11" % "2.2.6",
-  "org.scalacheck" %% "scalacheck" % "1.12.5",
+  "org.scalatest" %% "scalatest" % "3.0.0",
+  "org.scalacheck" %% "scalacheck" % "1.13.3",
   "org.scala-lang.modules" % "scala-jline" % "2.12.1",
-  "com.github.scopt" %% "scopt" % "3.4.0"
+  "com.github.scopt" %% "scopt" % "3.5.0"
 )
 
 //javaOptions in run ++= Seq(
