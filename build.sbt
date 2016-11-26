@@ -1,15 +1,16 @@
-name := "firrtl-interpreter"
+
 
 //organization := "edu.berkeley.cs"
 organization := "com.github.kammoh"
 
+name := "firrtl-interpretor"
+
 version := "1.1-SNAPSHOT"
 
-resolvers += "jitpack" at "https://jitpack.io"
 
 val chiselVersion = System.getProperty("chiselVersion", "3.1-SNAPSHOT")
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.7"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
@@ -25,11 +26,36 @@ libraryDependencies ++= (Seq("firrtl").map {
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.0",
-  "org.scalacheck" %% "scalacheck" % "1.13.3",
+  "org.scalacheck" %% "scalacheck" % "1.13.4",
   "org.scala-lang.modules" % "scala-jline" % "2.12.1",
   "com.github.scopt" %% "scopt" % "3.5.0"
 )
 
-//javaOptions in run ++= Seq(
-    //"-Xms2G", "-Xmx4G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
+pomIncludeRepository := { _ => false }
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
+
+
+licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-license.php"))
+
+homepage := Some(url("https://github.com/kammoh/firrtl-interpretor"))
+
+pomExtra := (
+  <scm>
+    <url>git@github.com:kammoh/firrtl-interpretor.git</url>
+    <connection>scm:git:git@github.com:kammoh/firrtl-interpretor.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>jsuereth</id>
+      <name>Kamyar Mohajerani</name>
+      <url>https://github.com/kammoh</url>
+    </developer>
+  </developers>)
 
